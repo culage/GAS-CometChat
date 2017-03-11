@@ -7,7 +7,7 @@ var IDX_NAME = 2;
 var IDX_MSG  = 3;
 
 var TIMEOUT_TIME = 4 * 60 * 1000;  // 読み込みタイムアウト：4分 * 60秒 * 1000ミリ秒
-var FAST_SCAN_TIME = 30 * 1000;  // 最初のn秒以降は読み込み間隔を長くする：30秒 * 1000ミリ秒
+var FAST_SCAN_TIME = 30 * 1000;  // 負荷軽減のため最初のn秒以降は読み込み間隔を長くする：30秒 * 1000ミリ秒
 var MESSAGE_FORMAT = "<p id='{id}'>{time} {name}：{msg}</p>\n";
 
 // コード
@@ -18,7 +18,6 @@ var MESSAGE_FORMAT = "<p id='{id}'>{time} {name}：{msg}</p>\n";
 function doGet() {
   var template = HtmlService.createTemplateFromFile("chat");
   return template.evaluate();
-  HtmlService.createHtmlOutput()
 }
 
 // 書込み
