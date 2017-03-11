@@ -9,7 +9,9 @@ p { margin: 0px; }
 <script>
 var MESSAGE_FORMAT = "<?= MESSAGE_FORMAT ?>";
 
+// 初期設定
 $(function() {
+  // 書込みボタン
   $("#btnSend").on("click", function() {
     var now = new Date();
     var id = getTimeId(now);
@@ -20,7 +22,8 @@ $(function() {
     if (msg == "") { return; }
     
     google.script.run.writeChat(id, time, name, msg);
-  
+
+    // 書込み内容を即時反映
     var msg = MESSAGE_FORMAT
       .replace("{id}"  , id)
       .replace("{time}", time)
@@ -30,45 +33,53 @@ $(function() {
     $("#txtMsg").val("");
   });
   
+  // Enterで書き込みボタンを押す
   $("#txtMsg").on("keyup", function(e) {
     var KEY_ENTER = 13;
     if (e.keyCode == KEY_ENTER) { $("#btnSend").click(); }
   });
-  
+
+  // Cometによる読み込みを行う
   pollingCometChat();
 });
 
+// Cometによる読み込み
 function pollingCometChat() {
+  // 最終ID取得
   var lastId = 0;
   var pList = document.querySelectorAll("#disp p");
   for (var i=0; i<pList.length; i++) {
     if (lastId < pList[i].id) { lastId = pList[i].id; }
   }
+  console.log("call!:"+lastId);// ★でばっぐ
   
-console.log("call!:"+lastId);// ★でばっぐ
+  // 最終ID以降を取得
   google.script.run
     .withSuccessHandler(thenProc)
     .withFailureHandler(thenProc)
     .fetchNewMessage(String(lastId));
   
   function thenProc(result) {
-  
-console.log("response!:"+result);// ★でばっぐ
-// ★todo:すでにあるidは追加しない
+    console.log("response!:"+result);// ★でばっぐ
+    // メッセージ追加
     addMessage(result);
 
+    // Cometによる読み込み維持
     pollingCometChat();
   }
 }
 
+// メッセージ追加(msgには複数のメッセージが渡される)
 function addMessage(msg) {
   var disp = document.querySelector("#disp");
   
+  // メッセージ単位に追加
   var list = msg.split("\n");
   for (var i=0; i<list.length; i++) {
     var oneMsg = list[i];
     if (oneMsg == "") { continue; }
     
+    // 既に存在するものは追加しない
     var id = $(oneMsg).attr("id");
     if (disp.querySelector("p[id='" + id + "']") != null) { continue; }
     
@@ -78,6 +89,7 @@ function addMessage(msg) {
   disp.scrollTop = disp.scrollHeight;
 }
 
+// ID組み立て
 function getTimeId(date) {
   var id = "";
   id += formatDate(date, 'yyyyMMddHHmmss');
@@ -85,6 +97,7 @@ function getTimeId(date) {
   return id;
 }
 
+// 日付フォーマット関数
 function formatDate(date, format) {
   if (!format) format = 'YYYY-MM-DD hh:mm:ss.SSS';
   format = format.replace(/yyyy/g, date.getFullYear());
