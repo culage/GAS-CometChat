@@ -9,7 +9,8 @@ var FAST_SCAN_TIME = 30 * 1000;  // 最初のn秒以降は読み込み間隔を�
 var MESSAGE_FORMAT = "<p id='{id}'>{time} {name}：{msg}</p>\n";
 
 function doGet() {
-  return HtmlService.createHtmlOutputFromFile("chat");
+  var template = HtmlService.createTemplateFromFile("chat");
+  return template.evaluate();
 }
 
 //★てすと
@@ -66,16 +67,9 @@ Logger.log(datas);
 }
 
 // 書込み
-function writeChat(name, msg) {
+function writeChat(id, time, name, msg) {
   var sheet = getMainSheet();
-
-  var now = new Date();
-  var formatedNow = Utilities.formatDate(now, "Asia/Tokyo", "[HH:mm:ss]");
-  var id = getTimeId(now);
-
-  name = name || "ななしさん";
-  
-  sheet.appendRow([id, formatedNow, name, msg]);
+  sheet.appendRow([id, time, name, msg]);
 }
 
 // 読み込み
@@ -98,7 +92,7 @@ function fetchNewMessage(lastId) {
   
   var result = "";
   datas.forEach(function(data) {
-    var dataElement = MESAGE_FORMAT
+    var dataElement = MESSAGE_FORMAT
       .replace("{id}"  , data[IDX_ID])
       .replace("{time}", data[IDX_TIME])
       .replace("{name}", escape_html(data[IDX_NAME]))
@@ -132,11 +126,4 @@ function escape_html (string) {
       '>': '&gt;',
     }[match]
   });
-}
-
-function getTimeId(dateTime) {
-  var id = "";
-  id += Utilities.formatDate(dateTime, 'Asia/Tokyo', 'yyyyMMddHHmmss');
-  id += ("000" + String(dateTime.getMilliseconds())).slice(-3);
-  return id;
 }

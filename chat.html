@@ -7,16 +7,30 @@ p { margin: 0px; }
 </style>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 <script>
+var MESSAGE_FORMAT = "<?= MESSAGE_FORMAT ?>";
+
 $(function() {
+
 	$("#btnSend").on("click", function() {
-		var name = $("#txtName").val();
+        var now = new Date();
+        var id = getTimeId(now);
+        var time = formatDate(now, "[HH:mm:ss]");
+		var name = $("#txtName").val() || "ななしさん";
 		var msg  = $("#txtMsg").val();
 		
 		if (msg == "") { return; }
 		
-		google.script.run.writeChat(name, msg);
-		
-// ★todo:即座に追加
+		google.script.run.writeChat(id, time, name, msg);
+
+        var addMessage = MESSAGE_FORMAT
+          .replace("{id}"  , id)
+          .replace("{time}", time)
+          .replace("{name}", name)
+          .replace("{msg}" , msg);
+		var disp = document.querySelector("#disp");
+		disp.innerHTML += addMessage;
+		disp.scrollTop = disp.scrollHeight;
+
 		$("#txtMsg").val("");
 	});
 	$("#txtMsg").on("keyup", function(e) {
@@ -49,6 +63,29 @@ console.log("response!:"+result);// ★でばっぐ
 
 	    pollingCometChat();
     }
+}
+
+function getTimeId(date) {
+  var id = "";
+  id += formatDate(date, 'yyyyMMddHHmmss');
+  id += ("000" + String(date.getMilliseconds())).slice(-3);
+  return id;
+}
+
+function formatDate(date, format) {
+  if (!format) format = 'YYYY-MM-DD hh:mm:ss.SSS';
+  format = format.replace(/yyyy/g, date.getFullYear());
+  format = format.replace(/MM/g, ('0' + (date.getMonth() + 1)).slice(-2));
+  format = format.replace(/dd/g, ('0' + date.getDate()).slice(-2));
+  format = format.replace(/HH/g, ('0' + date.getHours()).slice(-2));
+  format = format.replace(/mm/g, ('0' + date.getMinutes()).slice(-2));
+  format = format.replace(/ss/g, ('0' + date.getSeconds()).slice(-2));
+  if (format.match(/S/g)) {
+    var milliSeconds = ('00' + date.getMilliseconds()).slice(-3);
+    var length = format.match(/S/g).length;
+    for (var i = 0; i < length; i++) format = format.replace(/S/, milliSeconds.substring(i, i + 1));
+  }
+  return format;
 }
 
 </script>
