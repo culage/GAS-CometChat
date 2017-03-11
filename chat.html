@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+<base target="_top">
+<style>
+p { margin: 0px; }
+</style>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script>
+$(function() {
+	$("#btnSend").on("click", function() {
+		var name = $("#txtName").val();
+		var msg  = $("#txtMsg").val();
+		
+		if (msg == "") { return; }
+		
+		google.script.run.writeChat(name, msg);
+		
+// ★todo:即座に追加
+		$("#txtMsg").val("");
+	});
+	$("#txtMsg").on("keyup", function(e) {
+		var KEY_ENTER = 13;
+		if (e.keyCode == KEY_ENTER) { $("#btnSend").click(); }
+	});
+
+	pollingCometChat();
+});
+
+function pollingCometChat() {
+    var lastId = 0;
+    var pList = document.querySelectorAll("#disp p");
+    for (var i=0; i<pList.length; i++) {
+      if (lastId < pList[i].id) { lastId = pList[i].id; }
+    }
+	
+console.log("call!:"+lastId);// ★でばっぐ
+	google.script.run
+		.withSuccessHandler(thenProc)
+        .withFailureHandler(thenProc)
+		.fetchNewMessage(String(lastId));
+	
+	function thenProc(result) {
+console.log("response!:"+result);// ★でばっぐ
+// ★todo:すでにあるidは追加しない
+		var disp = document.querySelector("#disp");
+		disp.innerHTML += result;
+		disp.scrollTop = disp.scrollHeight;
+
+	    pollingCometChat();
+    }
+}
+
+</script>
+</head>
+<body>
+<div id="disp" style="height:5em;border:solid 1px black; overflow-y:scroll;">
+</div>
+
+<input type="text" id="txtName" size=10><input type="text" id="txtMsg" size=80><input type="button" id="btnSend" value="send">
