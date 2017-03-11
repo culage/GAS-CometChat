@@ -14,7 +14,7 @@ $(function() {
   // 書込みボタン
   $("#btnSend").on("click", function() {
     var now = new Date();
-    var id = getTimeId(now);
+    var id = generateIdByTime(now);
     var time = formatDate(now, "[HH:mm:ss]");
     var name = $("#txtName").val() || "ななしさん";
     var msg  = $("#txtMsg").val();
@@ -90,11 +90,8 @@ function addMessage(msg) {
 }
 
 // ID組み立て
-function getTimeId(date) {
-  var id = "";
-  id += formatDate(date, 'yyyyMMddHHmmss');
-  id += ("000" + String(date.getMilliseconds())).slice(-3);
-  return id;
+function generateIdByTime(date) {
+  return formatDate(date, 'yyyyMMddHHmmssSSS');
 }
 
 // 日付フォーマット関数
