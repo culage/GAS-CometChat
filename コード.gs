@@ -6,6 +6,7 @@ var IDX_MSG  = 3;
 
 var TIMEOUT_TIME = 4 * 60 * 1000;  // 読み込みタイムアウト：4分 * 60秒 * 1000ミリ秒
 var FAST_SCAN_TIME = 30 * 1000;  // 最初のn秒以降は読み込み間隔を長くする：30秒 * 1000ミリ秒
+var MESSAGE_FORMAT = "<p id='{id}'>{time} {name}：{msg}</p>\n";
 
 function doGet() {
   return HtmlService.createHtmlOutputFromFile("chat");
@@ -97,7 +98,7 @@ function fetchNewMessage(lastId) {
   
   var result = "";
   datas.forEach(function(data) {
-    var dataElement = "<p id='{id}'>{time} {name}：{msg}</p>\n"
+    var dataElement = MESAGE_FORMAT
       .replace("{id}"  , data[IDX_ID])
       .replace("{time}", data[IDX_TIME])
       .replace("{name}", escape_html(data[IDX_NAME]))
