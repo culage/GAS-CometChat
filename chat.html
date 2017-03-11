@@ -22,15 +22,12 @@ $(function() {
 		
 		google.script.run.writeChat(id, time, name, msg);
 
-        var addMessage = MESSAGE_FORMAT
+        var msg = MESSAGE_FORMAT
           .replace("{id}"  , id)
           .replace("{time}", time)
           .replace("{name}", name)
           .replace("{msg}" , msg);
-		var disp = document.querySelector("#disp");
-		disp.innerHTML += addMessage;
-		disp.scrollTop = disp.scrollHeight;
-
+        addMessage(msg);
 		$("#txtMsg").val("");
 	});
 	$("#txtMsg").on("keyup", function(e) {
@@ -57,12 +54,16 @@ console.log("call!:"+lastId);// ★でばっぐ
 	function thenProc(result) {
 console.log("response!:"+result);// ★でばっぐ
 // ★todo:すでにあるidは追加しない
-		var disp = document.querySelector("#disp");
-		disp.innerHTML += result;
-		disp.scrollTop = disp.scrollHeight;
+        addMessage(result);
 
 	    pollingCometChat();
     }
+}
+
+function addMessage(msg) {
+  var disp = document.querySelector("#disp");
+  disp.innerHTML += msg;
+  disp.scrollTop = disp.scrollHeight;
 }
 
 function getTimeId(date) {
