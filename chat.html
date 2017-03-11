@@ -10,54 +10,55 @@ p { margin: 0px; }
 var MESSAGE_FORMAT = "<?= MESSAGE_FORMAT ?>";
 
 $(function() {
-
-	$("#btnSend").on("click", function() {
-        var now = new Date();
-        var id = getTimeId(now);
-        var time = formatDate(now, "[HH:mm:ss]");
-		var name = $("#txtName").val() || "ななしさん";
-		var msg  = $("#txtMsg").val();
-		
-		if (msg == "") { return; }
-		
-		google.script.run.writeChat(id, time, name, msg);
-
-        var msg = MESSAGE_FORMAT
-          .replace("{id}"  , id)
-          .replace("{time}", time)
-          .replace("{name}", name)
-          .replace("{msg}" , msg);
-        addMessage(msg);
-		$("#txtMsg").val("");
-	});
-	$("#txtMsg").on("keyup", function(e) {
-		var KEY_ENTER = 13;
-		if (e.keyCode == KEY_ENTER) { $("#btnSend").click(); }
-	});
-
-	pollingCometChat();
+  $("#btnSend").on("click", function() {
+    var now = new Date();
+    var id = getTimeId(now);
+    var time = formatDate(now, "[HH:mm:ss]");
+    var name = $("#txtName").val() || "ななしさん";
+    var msg  = $("#txtMsg").val();
+    
+    if (msg == "") { return; }
+    
+    google.script.run.writeChat(id, time, name, msg);
+  
+    var msg = MESSAGE_FORMAT
+      .replace("{id}"  , id)
+      .replace("{time}", time)
+      .replace("{name}", name)
+      .replace("{msg}" , msg);
+    addMessage(msg);
+    $("#txtMsg").val("");
+  });
+  
+  $("#txtMsg").on("keyup", function(e) {
+    var KEY_ENTER = 13;
+    if (e.keyCode == KEY_ENTER) { $("#btnSend").click(); }
+  });
+  
+  pollingCometChat();
 });
 
 function pollingCometChat() {
-    var lastId = 0;
-    var pList = document.querySelectorAll("#disp p");
-    for (var i=0; i<pList.length; i++) {
-      if (lastId < pList[i].id) { lastId = pList[i].id; }
-    }
-	
+  var lastId = 0;
+  var pList = document.querySelectorAll("#disp p");
+  for (var i=0; i<pList.length; i++) {
+    if (lastId < pList[i].id) { lastId = pList[i].id; }
+  }
+  
 console.log("call!:"+lastId);// ★でばっぐ
-	google.script.run
-		.withSuccessHandler(thenProc)
-        .withFailureHandler(thenProc)
-		.fetchNewMessage(String(lastId));
-	
-	function thenProc(result) {
+  google.script.run
+    .withSuccessHandler(thenProc)
+    .withFailureHandler(thenProc)
+    .fetchNewMessage(String(lastId));
+  
+  function thenProc(result) {
+  
 console.log("response!:"+result);// ★でばっぐ
 // ★todo:すでにあるidは追加しない
-        addMessage(result);
+    addMessage(result);
 
-	    pollingCometChat();
-    }
+    pollingCometChat();
+  }
 }
 
 function addMessage(msg) {
