@@ -62,7 +62,18 @@ console.log("response!:"+result);// ★でばっぐ
 
 function addMessage(msg) {
   var disp = document.querySelector("#disp");
-  disp.innerHTML += msg;
+  
+  var list = msg.split("\n");
+  for (var i=0; i<list.length; i++) {
+    var oneMsg = list[i];
+    if (oneMsg == "") { continue; }
+    
+    var id = $(oneMsg).attr("id");
+    if (disp.querySelector("p[id='" + id + "'") != null) { continue; }
+    
+    disp.innerHTML += oneMsg;
+  }
+  
   disp.scrollTop = disp.scrollHeight;
 }
 
