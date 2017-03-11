@@ -69,7 +69,7 @@ function addMessage(msg) {
     if (oneMsg == "") { continue; }
     
     var id = $(oneMsg).attr("id");
-    if (disp.querySelector("p[id='" + id + "'") != null) { continue; }
+    if (disp.querySelector("p[id='" + id + "']") != null) { continue; }
     
     disp.innerHTML += oneMsg;
   }
