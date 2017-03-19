@@ -1,3 +1,14 @@
+function test2() {
+  var _setting = new SettingSheet("1zJ4zGh-ondRiswOLnviwtQzaWCIkfzwsmflPxv45TjI");
+  var TIMEOUT_TIME = _setting.loadNum("TIMEOUT_TIME");
+  var FAST_SCAN_TIME = _setting.loadNum("FAST_SCAN_TIME");
+  var MESSAGE_FORMAT = _setting.loadStr("MESSAGE_FORMAT");
+  
+  Logger.log(TIMEOUT_TIME);
+  Logger.log(FAST_SCAN_TIME);
+  Logger.log(MESSAGE_FORMAT);
+}
+
 // てすと
 // ==========================================================================================
 function test() {
